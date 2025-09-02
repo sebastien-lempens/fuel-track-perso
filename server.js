@@ -1,9 +1,21 @@
+
+import 'dotenv/config';
 import express from 'express';
-import { prisma } from './prisma.js';
+import { prisma } from './lib/prisma.js'; // Adjusted path
 import { z, ZodError } from 'zod';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
+
+// --- START: Added for production ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Serve static files from the 'dist' directory
+app.use(express.static(path.join(__dirname, 'dist')));
+// --- END: Added for production ---
+
 
 app.use(cors());
 app.use(express.json());
@@ -68,7 +80,7 @@ app.delete('/api/fuel-logs/:id', async (req, res) => {
 	try {
 		const { id } = req.params;
 		await prisma.rawFuelEntry.delete({
-			where: { id },
+			where: { id: Number(id) },
 		});
 		res.status(204).send();
 	} catch (error) {
@@ -76,6 +88,14 @@ app.delete('/api/fuel-logs/:id', async (req, res) => {
 		res.status(500).json({ error: 'An error occurred while deleting the fuel log.' });
 	}
 });
+
+// --- START: Added for production ---
+// For any other request, serve the index.html file
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+// });
+// --- END: Added for production ---
+
 
 app.listen(port, () => {
 	console.log(`Server listening on ${port}`);
