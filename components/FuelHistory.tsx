@@ -15,7 +15,7 @@ interface FuelHistoryProps {
 
 const HistoryItem: React.FC<{ entry: FuelEntry; onDelete: (id: string) => void }> = ({ entry, onDelete }) => (
     <li className="bg-base-200 p-5 rounded-xl shadow-lg transition-transform hover:scale-[1.02] relative group">
-        <div className="flex justify-between items-start mb-4">
+        <div className="sm:flex justify-between items-start mb-4 space-y-3">
             <div className="flex items-center space-x-3">
                 <CalendarIcon className="w-5 h-5 text-text-secondary" />
                 <span className="font-bold text-lg text-text-primary">
@@ -23,8 +23,8 @@ const HistoryItem: React.FC<{ entry: FuelEntry; onDelete: (id: string) => void }
                 </span>
             </div>
             {entry.l100km && (
-                <div className="bg-brand-primary/20 text-brand-secondary text-sm font-bold px-3 py-1 rounded-full">
-                    {entry.l100km.toFixed(2)} L/100km
+                <div className="bg-brand-primary/20 text-brand-secondary text-sm font-bold px-3 py-1 rounded-full text-center">
+                    {entry.l100km.toFixed(2)} <span>L/100km</span>
                 </div>
             )}
         </div>
