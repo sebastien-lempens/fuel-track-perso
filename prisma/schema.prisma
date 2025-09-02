@@ -18,7 +18,7 @@ datasource db {
 
 model RawFuelEntry {
   id              String   @id @default(cuid())
-  date            DateTime
+  date            DateTime @db.Timestamp(6)
   liters          Float
   priceTotalLiter Float
   odometer        Int
