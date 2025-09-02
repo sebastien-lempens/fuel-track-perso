@@ -91,9 +91,9 @@ app.delete('/api/fuel-logs/:id', async (req, res) => {
 
 // --- START: Added for production ---
 // For any other request, serve the index.html file
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-// });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 // --- END: Added for production ---
 
 
