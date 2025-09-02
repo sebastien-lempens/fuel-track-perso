@@ -4,21 +4,21 @@ generator client {
 
 // --- Pour la PRODUCTION (par défaut) ---
 // Décommentez ce bloc avant de pousser votre code en production
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// --- Pour le DEVELOPPEMENT LOCAL ---
-// Commentez le bloc postgresql ci-dessus et décommentez celui-ci
 // datasource db {
-//   provider = "sqlite"
+//   provider = "postgresql"
 //   url      = env("DATABASE_URL")
 // }
 
+// --- Pour le DEVELOPPEMENT LOCAL ---
+// Commentez le bloc postgresql ci-dessus et décommentez celui-ci
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
 model RawFuelEntry {
   id              String   @id @default(cuid())
-  date            DateTime @db.Timestamp(6)
+  date            DateTime 
   liters          Float
   priceTotalLiter Float
   odometer        Int
