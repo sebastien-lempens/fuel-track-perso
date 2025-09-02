@@ -1,4 +1,3 @@
-
 import express from 'express';
 import { prisma } from './lib/prisma.js'; // Adjusted path
 import { z, ZodError } from 'zod';
@@ -14,7 +13,6 @@ const __dirname = path.dirname(__filename);
 // Serve static files from the 'dist' directory
 app.use(express.static(path.join(__dirname, 'dist')));
 // --- END: Added for production ---
-
 
 app.use(cors());
 app.use(express.json());
