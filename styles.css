@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-brand-primary: rgb(13, 148, 136); /* Teal 600 */
+	--color-brand-secondary: rgb(20, 184, 166); /* Teal 500 */
+	--color-base-100: rgb(17, 24, 39); /* Gray 900 */
+	--color-base-200: rgb(31, 41, 55); /* Gray 800 */
+	--color-base-300: rgb(55, 65, 81); /* Gray 700 */
+	--color-text-primary: rgb(249, 250, 251); /* Gray 50 */
+	--color-text-secondary: 209 213 219; /* Gray 300 */
+}

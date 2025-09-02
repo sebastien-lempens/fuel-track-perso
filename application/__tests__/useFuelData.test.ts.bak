@@ -1,0 +1,102 @@
+// FIX: Add imports for Vitest globals to resolve TypeScript errors.
+import { describe, beforeEach, afterEach, it, expect, vi, type Mock } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useFuelData } from '../useFuelData';
+import { LocalStorageFuelRepository } from '../../infrastructure/FuelRepository';
+import type { RawFuelEntry } from '../../domain/types';
+
+// Mock the repository to isolate the hook from localStorage
+vi.mock('../../infrastructure/FuelRepository');
+
+describe('useFuelData', () => {
+	let mockLoad: Mock<unknown[], RawFuelEntry[]>;
+	let mockSave: Mock<[RawFuelEntry[]], void>;
+
+	beforeEach(() => {
+		mockLoad = vi.fn();
+		mockSave = vi.fn();
+		vi.mocked(LocalStorageFuelRepository).mockImplementation(() => {
+			return {
+				load: mockLoad,
+				save: mockSave,
+			};
+		});
+	});
+
+	afterEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it('should initialize with data from the repository', () => {
+		const initialEntries: RawFuelEntry[] = [{ id: '1', date: '2023-01-01', odometer: 10000, liters: 40, priceTotalLiter: 1.8 }];
+		mockLoad.mockReturnValue(initialEntries);
+
+		const { result } = renderHook(() => useFuelData());
+
+		expect(mockLoad).toHaveBeenCalledTimes(1);
+		expect(result.current.entries).toHaveLength(1);
+		expect(result.current.entries[0].id).toBe('1');
+	});
+
+	it('should add a fuel entry and save to the repository', () => {
+		mockLoad.mockReturnValue([]);
+		const { result } = renderHook(() => useFuelData());
+
+		const newEntryData = { date: '2023-02-01', odometer: 10500, liters: 35, priceTotalLiter: 1.9 };
+
+		act(() => {
+			result.current.addFuelEntry(newEntryData);
+		});
+
+		expect(result.current.entries).toHaveLength(1);
+		expect(result.current.entries[0].odometer).toBe(10500);
+
+		// Check that save was called with the new entry list
+		expect(mockSave).toHaveBeenCalledTimes(1);
+		const savedData = mockSave.mock.calls[0][0];
+		expect(savedData).toHaveLength(1);
+		expect(savedData[0].odometer).toBe(10500);
+	});
+
+	it('should delete a fuel entry and save to the repository', () => {
+		const initialEntries: RawFuelEntry[] = [
+			{ id: '1', date: '2023-01-01', odometer: 10000, liters: 40, priceTotalLiter: 1.8 },
+			{ id: '2', date: '2023-02-01', odometer: 10500, liters: 35, priceTotalLiter: 1.9 },
+		];
+		mockLoad.mockReturnValue(initialEntries);
+
+		const { result } = renderHook(() => useFuelData());
+		expect(result.current.entries).toHaveLength(2);
+
+		act(() => {
+			result.current.deleteFuelEntry('1');
+		});
+
+		expect(result.current.entries).toHaveLength(1);
+		expect(result.current.entries[0].id).toBe('2');
+
+		// Check that save was called with the remaining entry
+		expect(mockSave).toHaveBeenCalledTimes(1);
+		const savedData = mockSave.mock.calls[0][0];
+		expect(savedData).toHaveLength(1);
+		expect(savedData[0].id).toBe('2');
+	});
+
+	it('should calculate stats correctly when entries change', () => {
+		const initialEntries: RawFuelEntry[] = [{ id: '1', date: '2023-01-01', odometer: 10000, liters: 40, priceTotalLiter: 1.8 }];
+		mockLoad.mockReturnValue(initialEntries);
+
+		const { result } = renderHook(() => useFuelData());
+		expect(result.current.stats.totalCost).toBe(72);
+		expect(result.current.stats.totalDistance).toBe(0);
+
+		const newEntryData = { date: '2023-02-01', odometer: 10500, liters: 35, priceTotalLiter: 2.0 }; // 70
+		act(() => {
+			result.current.addFuelEntry(newEntryData);
+		});
+
+		expect(result.current.stats.totalCost).toBe(142); // 72 + 70
+		expect(result.current.stats.totalDistance).toBe(500);
+		expect(result.current.stats.averageConsumption).toBe(7); // (35 / 500) * 100
+	});
+});

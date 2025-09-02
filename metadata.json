@@ -1,0 +1,5 @@
+{
+  "name": "Fuel Tracker Pro",
+  "description": "An elegant application to track your car's fuel consumption, manage expenses, and calculate average efficiency in liters per 100 kilometers.",
+  "requestFramePermissions": []
+}
