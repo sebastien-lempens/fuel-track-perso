@@ -25,4 +25,4 @@ dist-ssr
 *.sw?
 
 /generated/prisma
-/prisma/data.db
+**/*.db
