@@ -66,13 +66,12 @@ describe('App Integration Test', () => {
 		expect(screen.getByText(/Aucun plein enregistré/i)).toBeInTheDocument();
 
 		const statsCards = screen.getAllByTestId('stat-card');
+
 		expect(within(statsCards[0]).getByText('0.00')).toBeInTheDocument(); // Avg Consumption
 		expect(within(statsCards[1]).getByText('0.00')).toBeInTheDocument(); // Total Cost
 		expect(within(statsCards[2]).getByText('0')).toBeInTheDocument(); // Total Distance
 
 		// 2. Add the first fuel entry
-		// Using fireEvent.change for date inputs can be more reliable than userEvent.type
-		// fireEvent.change(screen.getByLabelText(/Date du jour/i), { target: { value: '2023-01-01' } });
 		await user.clear(screen.getByLabelText(/Date du jour/i));
 		await user.type(screen.getByLabelText(/Date du jour/i), '2023-01-01');
 		await user.type(screen.getByLabelText(/Litres Total/i), '40');
@@ -104,17 +103,15 @@ describe('App Integration Test', () => {
 
 		// 5. Verify both entries are present and stats are fully calculated
 		await waitFor(() => {
-			// La date de la deuxième entrée provient du `new Date()` mocké dans la logique de réinitialisation du formulaire.
-			// Comme notre mock est stable, cette assertion reste valide.
 			expect(within(historyList).getByText(/27 octobre 2023/i)).toBeInTheDocument();
 		});
 		expect(within(historyList).getAllByRole('listitem')).toHaveLength(2);
-
-		// Check calculated stats
-		expect(within(statsCards[0]).getByText('1.75')).toBeInTheDocument();
-		expect(within(statsCards[1]).getByText('140.00')).toBeInTheDocument();
-		expect(within(statsCards[2]).getByText('2 000')).toBeInTheDocument();
-
+		await waitFor(() => {
+			// Check calculated stats
+			expect(within(statsCards[0]).queryByText('3.75')).toBeInTheDocument();
+			expect(within(statsCards[1]).queryByText('140.00')).toBeInTheDocument();
+			expect(within(statsCards[2]).queryByText('2 000')).toBeInTheDocument();
+		});
 		// 6. Delete the first entry
 		const historyItems = within(historyList).getAllByRole('listitem');
 		const firstEntryDeleteButton = within(historyItems[1]).getByRole('button', { name: /Supprimer l'entrée/i });
@@ -123,8 +120,8 @@ describe('App Integration Test', () => {
 		// 7. Verify the entry is gone and stats are recalculated
 		await waitFor(() => {
 			expect(within(historyList).queryByText(/1 janvier 2023/i)).not.toBeInTheDocument();
+			expect(within(historyList).getAllByRole('listitem')).toHaveLength(1);
 		});
-		expect(within(historyList).getAllByRole('listitem')).toHaveLength(1);
 
 		// Stats should reset as there's only one entry left
 		expect(within(statsCards[0]).getByText('0.00')).toBeInTheDocument();
