@@ -15,12 +15,12 @@ describe('useFuelData', () => {
 	beforeEach(() => {
 		mockLoad = vi.fn();
 		mockSave = vi.fn();
-		vi.mocked(LocalStorageFuelRepository).mockImplementation(() => {
-			return {
-				load: mockLoad,
-				save: mockSave,
-			};
-		});
+		// vi.mocked(LocalStorageFuelRepository).mockImplementation(() => {
+		// 	return {
+		// 		load: mockLoad,
+		// 		save: mockSave,
+		// 	};
+		// });
 	});
 
 	afterEach(() => {
