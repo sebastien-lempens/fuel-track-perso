@@ -77,7 +77,7 @@ app.delete('/api/fuel-logs/:id', async (req, res) => {
 	try {
 		const { id } = req.params;
 		await prisma.rawFuelEntry.delete({
-			where: { id: Number(id) },
+			where: { id },
 		});
 		res.status(204).send();
 	} catch (error) {
