@@ -1,27 +1,25 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
+// --- Pour la PRODUCTION (par défaut) ---
+// Décommentez ce bloc avant de pousser votre code en production
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// --- Pour le DEVELOPPEMENT LOCAL ---
+// Commentez le bloc postgresql ci-dessus et décommentez celui-ci
+// datasource db {
+//   provider = "sqlite"
+//   url      = env("DATABASE_URL")
+// }
+
 model RawFuelEntry {
-  id            String   @id @default(cuid())
-  date          DateTime
-  liters        Float
+  id              String   @id @default(cuid())
+  date            DateTime
+  liters          Float
   priceTotalLiter Float
-  odometer      Int
+  odometer        Int
 }
